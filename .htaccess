@@ -13,35 +13,9 @@
 
 
 
-
-
-
 ########################################################################################################################
 # ========================= TWEAKS =====================================================================================
 ########################################################################################################################
-
-
-# URL CANONICALIZATION
-#
-# Both the naked domain and www should resolve to the same URL. 
-# If you want to redirect http://www.example.com to http://example.com, you can use this:
-
-#RewriteCond %{HTTP_HOST} ^www\.example\.com$
-#RewriteRule ^/?$ "http\:\/\/example\.com\/" [R=301,L]
-
-# If you want to redirect http://example.com to http://www.example.com, you can use this:
-#
-#RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
-#RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
-
-
-
-
-# SHOW THE ADMIN’S EMAIL ADDRESS IN APACHE ERROR MESSAGES
-#
-#SetEnv SERVER_ADMIN email@isp.com
-
-
 
 
 # BLOCK ACCESS TO DIRECTORIES WITHOUT A DEFAULT DOCUMENT
@@ -50,14 +24,6 @@
     Options -Indexes
 </IfModule>
 
-
-
-
-# ALLOW CROSS-ORIGIN REQUESTS.
-#
-# <IfModule mod_headers.c>
-#     Header set Access-Control-Allow-Origin "*"
-# </IfModule>
 
 # SEND THE CORS HEADER FOR IMAGES WHEN BROWSERS REQUEST IT.
 #
@@ -82,9 +48,18 @@
 
 # CUSTOM ERROR PAGES
 # 
-ErrorDocument 403 /403-forbidden.html
-ErrorDocument 404 /404-notfound.html
-
+ErrorDocument 400 /security/ERROR400.html
+ErrorDocument 401 /security/ERROR401.html
+ErrorDocument 403 /security/ERROR403.html
+ErrorDocument 404 /security/ERROR404.html
+ErrorDocument 405 /security/ERROR405.html
+ErrorDocument 414 /security/ERROR414.html
+ErrorDocument 416 /security/ERROR416.html
+ErrorDocument 500 /security/ERROR500.html
+ErrorDocument 501 /security/ERROR501.html
+ErrorDocument 502 /security/ERROR502.html
+ErrorDocument 503 /security/ERROR503.html
+ErrorDocument 504 /security/ERROR504.html
 
 
 # PREVENTS OVERZEALOUS 404 ERRORS FROM APACHE
@@ -94,9 +69,8 @@ Options -MultiViews
 
 
 # TURN OFF DIRECTORY INDEXING (Can break Wordpress' URLs in some situations)
-#
-# Options All -Indexes
 
+Options All -Indexes
 
 
 # TURN OFF DIRECTORY INDEXING ALT
@@ -104,7 +78,6 @@ Options -MultiViews
 <IfModule mod_autoindex.c>
   Options -Indexes
 </IfModule>
-
 
 
 # INCREASE MAXIMUM UPLOAD FILE SIZE (OPTIONAL)
@@ -115,22 +88,11 @@ Options -MultiViews
 #php_value max_input_time 300
 
 
-
 # ADD SUPPORT FOR SVG AND HTC
 #
 AddType image/svg+xml svg svgz
 AddEncoding gzip svgz
 AddType text/x-component .htc
-
-
-
-# REDIRECT ALL WORDPRESS FEEDS TO FEEDBURNER
-#
-# <IfModule mod_alias.c>
-#   RedirectMatch 301 /feed/(atom|rdf|rss|rss2)/?$ http://feedburner.com/yourfeed/
-#   RedirectMatch 301 /comments/feed/(atom|rdf|rss|rss2)/?$ http://feedburner.com/yourfeed/
-# </IfModule>
-
 
 
 # BLOCK ACCESS TO ANY SOURCE FILES
@@ -153,35 +115,6 @@ AddType text/x-component .htc
 </IfModule>
 
 
-
-# CHANGE URL
-#
-# Option 1: Add www - http://domain > http://www.domain
-
-# <IfModule mod_rewrite.c>
-#     Options +FollowSymlinks #Not supported by some hosting
-#     ## If you wish to redirect to a https:// simply substitute http: with https:
-#     RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
-#     RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-#     ## Redirect away from /index.php to clear path
-#     RewriteCond %{THE_REQUEST} ^.*/index.php  
-#     RewriteRule ^(.*)index.php$ http://www.%{HTTP_HOST}%{REQUEST_URI}$1 [R=301,L] 
-# </IfModule>
-
-# Option 2: Strip www - http://www.domain > http://domain
-
-# <IfModule mod_rewrite.c>
-#     Options +FollowSymlinks #Not supported by some hosting
-#     ## If you wish to redirect to a https:// simply substitute http: with https:
-#     RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-#     RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
-#     ## Redirect away from /index.php to clear path
-#     RewriteCond %{THE_REQUEST} ^.*/index.php  
-#     RewriteRule ^(.*)index.php$ http://%{HTTP_HOST}%{REQUEST_URI}$1 [R=301,L] 
-# </IfModule>
-
-
-
 # FORCE SSL
 #
 # <IfModule mod_rewrite.c>
@@ -195,18 +128,18 @@ AddType text/x-component .htc
 # See: 
 # https://github.com/h5bp/server-configs-apache/pull/83/files
 #
-#<IfModule mod_headers.c>
-#    Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
-#</IfModule>
+<IfModule mod_headers.c>
+    Header set Content-Security-Policy "upgrade-insecure-requests" env=HTTPS
+</IfModule>
 
 
 # FORCE CLIENT-SIDE SSL REDIRECTION
 # See: 
 # https://github.com/h5bp/server-configs-apache/pull/83/files
 #
-#<IfModule mod_headers.c>
-#    Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains"
-#</IfModule>
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains"
+</IfModule>
 
 
 # CACHE SSL REDIRECTION
@@ -215,9 +148,9 @@ AddType text/x-component .htc
 #
 # (!) Remove the `env=HTTPS` optional directive if you want to force HTTP to HTTPS.
 #
-# <IfModule mod_headers.c>
-#     Header set Strict-Transport-Security "max-age=86400; includeSubDomains" env=HTTPS
-#</IfModule>
+ <IfModule mod_headers.c>
+     Header set Strict-Transport-Security "max-age=86400; includeSubDomains"
+</IfModule>
 
 
 # SERVE RESOURCES WITH THE PROPER MEDIA TYPES (MIME TYPES)
@@ -266,7 +199,6 @@ AddType text/x-component .htc
 </IfModule>
 
 
-
 # Character encodings as utf-8
 #
 AddDefaultCharset utf-8
@@ -288,10 +220,6 @@ AddDefaultCharset utf-8
                      .xloc \
                      .xml
 </IfModule>
-
-
-
-
 
 
 ########################################################################################################################
@@ -330,7 +258,6 @@ mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 </ifModule>
 
 
-
 # USE MOD_DEFLATE IF MOD_PAGESPEED (BELOW) ISN'T INSTALLED
 #
 <IfModule mod_deflate.c>
@@ -341,7 +268,6 @@ mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
   SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary 
   Header append Vary User-Agent env=!dont-vary 
 </IfModule>
-
 
 
 # FORCE COMPRESSION FOR MANGLED `ACCEPT-ENCODING` REQUEST HEADERS
@@ -402,16 +328,6 @@ mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 </IfModule>
 
 
-# USE GOOGLE'S MOD_PAGESPEED IF IT'S INSTALLED ON SERVER (DO NOT USE THIS IF IT IS NOT INSTALLED)
-#
-#<IfModule pagespeed_module>
-#  ModPagespeed on
-#  ModPagespeedEnableFilters
-#  extend_cache,combine_css,combine_javascript,collapse_whitespace,move_css_to_head
-#</IfModule>>
-
-
-
 # BEGIN EXPIRE HEADERS
 #
 <ifModule mod_expires.c>
@@ -469,7 +385,7 @@ ExpiresActive on
       ExpiresByType application/font-woff2                "access plus 1 month"
   # Other
     ExpiresByType image/svg+xml                         "access plus 1 month"
-    ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
+    ExpiresByType text/x-cross-domain-policy            "access plus 0 seconds”
 </ifModule>
 
 
@@ -492,13 +408,11 @@ ExpiresActive on
 </ifModule>
 
 
-
 # ENABLE KEEP-ALIVE
 #
 <ifModule mod_headers.c>
     Header set Connection keep-alive
 </ifModule>
-
 
 
 # DISABLE ETAG
@@ -510,20 +424,10 @@ ExpiresActive on
 FileETag None
 
 
-
-
-
 ########################################################################################################################
 # ======================== SECURITY ====================================================================================
 ########################################################################################################################
 
-# BLOCK SEMRUSH BOTS FROM PERFORMING COMPETITIVE ANALYSIS
-# See: https://www.semrush.com/bot/
-#
-#User-agent: SemrushBot
-#Disallow: /
-#User-agent: SemrushBot-SA
-#Disallow: /
 
 # REMOVE SERVER SIGNATURE
 # See: 
@@ -531,24 +435,6 @@ FileETag None
 # * https://www.unixmen.com/how-to-disable-server-signature-using-htaccess-or-by-editing-apache/
 #
 ServerSignature Off
-
-
-# WHITELIST SPECIFIC IP ADDRESSES - http://stackoverflow.com/a/38703505/751570
-#
-#<RequireAll>
-#    Require ip XX.XX.XX.XX YY.YY.YY.YY
-#</RequireAll>
-
-
-
-# BLACKLIST SPECIFIC IP ADDRESSES - https://httpd.apache.org/docs/2.4/howto/access.html
-# (OR USE CLOUDFLARE'S FIREWALL, OR ITHEMES SECURITY BANNED USERS LIST)
-#
-#<RequireAll>
-#    Require all granted
-#    Require not ip XX.XX.XX.XX YY.YY.YY.YY
-#</RequireAll>
-
 
 
 # BLOCK WORDPRESS XMLRPC.PHP REQUESTS
@@ -560,8 +446,6 @@ ServerSignature Off
 </Files>
 
 
-
-
 # STRONG HTACCESS PROTECTION (PROTECTS THIS FILE FROM HACKERS)
 #
 <Files ~ "^.*\.([Hh][Tt][Aa])">
@@ -571,7 +455,6 @@ ServerSignature Off
 </Files>
 
 
-
 # REMOVE THE `X-POWERED-BY` RESPONSE HEADER
 #
 <IfModule mod_headers.c>
@@ -579,10 +462,9 @@ ServerSignature Off
 </IfModule>
 
 
-
 # RECOGNIZE SSL WHEN SET AT A LOAD BALANCER/PROXY LEVEL (FOR CLOUDFLARE)
 #
-#SetEnvIf X-Forwarded-Proto https HTTPS=on
+SetEnvIf X-Forwarded-Proto https HTTPS=on
 
 
 # PREVENT WORDPRESS VERSION EXPOSURE IN README.HTML
@@ -607,7 +489,6 @@ RewriteRule .* - [F]
 </IfModule>
 
 
-
 # BLOCK ACCESS TO FILES THAT CAN EXPOSE SENSITIVE INFORMATION
 #
 <FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|psd|sh|sql|sw[op])|~)$">
@@ -625,7 +506,6 @@ RewriteRule .* - [F]
     </IfModule>
 
 </FilesMatch>
-
 
 
 # DISABLE ACCESS TO WORDPRESS WP-CONFIG FILE
@@ -672,18 +552,6 @@ AddDefaultCharset utf-8
 </IfModule>
 
 
-# DENY NO REFERER REQUESTS - http://www.wprecipes.com/how-to-deny-comment-posting-to-no-referrer-requests
-#
-#<IfModule mod_rewrite.c>
-#  RewriteEngine On
-#  RewriteCond %{REQUEST_METHOD} POST
-#  RewriteCond %{REQUEST_URI} .wp-comments-post\.php*
-#  RewriteCond %{HTTP_REFERER} !.*yourblog.com.* [OR]
-#  RewriteCond %{HTTP_USER_AGENT} ^$
-#  RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
-#</IfModule>
-
-
 #BLOCK BROWSER ACCESS TO LOG FILES
 #
 <Files  ~ "\.log$">
@@ -694,11 +562,11 @@ AddDefaultCharset utf-8
 
 # STOP WORDPRESS USERNAME ENUMERATION VULNERABILITY
 #
-#RewriteCond %{REQUEST_URI}  ^/$
-#RewriteCond %{QUERY_STRING} ^/?author=([0-9]*)
-#RewriteRule ^(.*)$ http://[domain.com]/? [L,R=301]
-#RewriteCond %{QUERY_STRING} author=\d
-#RewriteRule ^ /? [L,R=301]
+RewriteCond %{REQUEST_URI}  ^/$
+RewriteCond %{QUERY_STRING} ^/?author=([0-9]*)
+RewriteRule ^(.*)$ httpx://technutty.co.uk/? [L,R=301]
+RewriteCond %{QUERY_STRING} author=\d
+RewriteRule ^ /? [L,R=301]
 
 
 #WP HARDENING SECURITY HEADERS
@@ -744,6 +612,10 @@ RewriteCond %{HTTP_REFERER} ^http://(www\.)?pixgood\.com(/.*)*$ [NC,OR]
 RewriteCond %{HTTP_REFERER} ^http://(www\.)?pudelekf23.blogspot\.com(/.*)*$ [NC,OR]
 RewriteCond %{HTTP_REFERER} ^http://(www\.)?fstdt\.com(/.*)*$ [NC,OR]
 RewriteCond %{HTTP_REFERER} ^http://(www\.)?zerohedge\.com(/.*)*$ [NC]
+RewriteCond %{HTTP_REFERER} ^https://(www\.)?namu\.wiki(/.*)*$ [NC]
+RewriteCond %{HTTP_REFERER} ^http://(www\.)?siliconfeed\.com(/.*)*$ [NC]
+RewriteCond %{HTTP_REFERER} ^http://(www\.)?betthomas\.com(/.*)*$ [NC]
+RewriteCond %{HTTP_REFERER} ^http://(www\.)?pulseheadlines\.com(/.*)*$ [NC]
 RewriteRule \.(jpeg|JPEG|jpe|JPE|jpg|JPG|gif|GIF|png|PNG|mng|MNG)$ - [F]
 </IfModule>
 
@@ -2394,10 +2266,3 @@ Deny from 99.243.11.140
 ########################################################################################################################
 
 
-
-
-
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
-#redirect 301 /old-page-url.html https://www.domain.ca/new-page-url
